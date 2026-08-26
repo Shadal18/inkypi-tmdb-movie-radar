@@ -1,175 +1,260 @@
-# TMDb Movie Radar
+# InkyPi TMDb Movie Radar
 
-TMDb Movie Radar is an [InkyPi](https://github.com/fatihak/InkyPi) plugin that turns an e-paper display into a movie-release billboard. It highlights one featured movie with poster art, release status, rating, runtime, genres, and a short overview.
+An InkyPi plugin that displays a featured upcoming, now-playing, popular, or top-rated movie from TMDb.
 
-It supports upcoming releases, now-playing movies, popular movies, and top-rated movies from The Movie Database (TMDb).
+_TMDb Movie Radar_ is a plugin for [InkyPi](https://github.com/fatihak/InkyPi) that connects to The Movie Database (TMDb) using an API key, retrieves movie metadata and poster artwork, and renders a poster-first movie card on your e-paper display.
 
-> This product uses the TMDB API but is not endorsed or certified by TMDB.
+## Install
+
+Use the InkyPi plugin installer with the plugin ID and this repository URL.
+
+```bash
+inkypi plugin install tmdb_movie_radar https://github.com/Shadal18/inkypi-tmdb-movie-radar
+```
+
+## Update
+
+To update the plugin on your InkyPi device:
+
+1. SSH into your InkyPi host.
+2. Change into the plugin directory:
+   ```bash
+   cd ~/InkyPi/src/plugins/tmdb_movie_radar
+   ```
+3. Run this update command:
+   ```bash
+   git pull origin main && \
+   if [ -d tmdb_movie_radar ]; then \
+     rsync -a tmdb_movie_radar/ ./ && \
+     rm -rf tmdb_movie_radar; \
+   fi && \
+   sudo systemctl restart inkypi.service
+   ```
+
+If you do not see your changes after updating:
+
+- Confirm you are in the correct plugin folder.
+- Hard refresh the InkyPi web UI.
+- Check the InkyPi logs for plugin import or runtime errors.
+- Confirm the InkyPi device has internet access and can reach TMDb.
+
+## Requirements
+
+- A working InkyPi installation with plugin support.
+- Internet access from the InkyPi device.
+- A free TMDb account with a Developer Plan application.
+- A TMDb **API Key** stored in InkyPi as `TMDB_API_KEY`.
+- Network access from the InkyPi device to `api.themoviedb.org` and TMDb's image service.
 
 ## Features
 
-- Large poster-first dashboard designed for color e-paper displays.
-- Upcoming Releases, Now Playing, Popular, and Top Rated modes.
-- Stable daily featured-movie selection, first-result selection, or a new random movie on each refresh.
-- Country/region and language selection.
-- Optional minimum-rating and minimum-vote filters.
-- Poster artwork, title, release status, rating, vote count, runtime, genres, and overview.
-- Clear release badges for today, this week, upcoming, and in-theater releases.
-- Six-color friendly presentation: blue header, yellow imminent-release badge, red today badge, green in-theater/rating emphasis, black text, and white background.
-- Friendly error display when the API key, network, or TMDb service is unavailable.
+This plugin is an extension for the InkyPi e-paper display frame and includes the following features:
 
-## Installation
+- Displays one featured movie with official TMDb poster artwork.
+- Supports Upcoming Releases, Now Playing, Popular Movies, and Top Rated Movies modes.
+- Shows movie title, release status, release date, TMDb rating, vote count, runtime, genres, and overview.
+- Supports a daily featured selection that remains stable throughout the day.
+- Supports first-result selection or a random movie on each refresh.
+- Supports release-region selection, such as US, CA, GB, or AU.
+- Supports language selection, such as `en-US`, `fr-FR`, or `de-DE`.
+- Supports optional minimum rating and minimum vote-count filters.
+- Uses a poster-first editorial layout designed for six-color Waveshare displays.
+- Uses blue as an information accent, green for highly rated or in-theater movies, yellow for movies releasing this week, and red for movies releasing today.
+- Shows a graceful error screen when TMDb, poster artwork, or the API key is unavailable.
+- Keeps TMDb API credentials outside plugin settings by using InkyPi API Keys.
+- Includes required TMDb attribution in the display footer.
 
-Install this plugin in your InkyPi plugins folder as `tmdb_movie_radar`.
+## Settings
 
-```text
-tmdb_movie_radar/
-├── tmdb_movie_radar.py
-├── settings.html
-├── plugin-info.json
-└── icon.png
-```
+The plugin settings page lets you customize:
 
-Restart InkyPi after copying the files:
+- Movie radar mode: Upcoming Releases, Now Playing, Popular Movies, or Top Rated Movies.
+- Featured movie selection: Daily Pick, First Result, or Random on Refresh.
+- Release region.
+- TMDb metadata language.
+- Minimum movie rating.
+- Minimum vote count.
+- TMDb and poster-download request timeout.
 
-```bash
-sudo systemctl restart inkypi.service
-```
+## TMDb Setup
 
-## TMDb API setup
+This plugin authenticates with TMDb using the shorter **API Key** shown in your TMDb API settings. It does not use the longer API Read Access Token.
 
-Movie Radar requires a free TMDb Developer Plan application and its **API Key**. This is a one-time setup.
+### Create a TMDb account
 
-### 1. Create or sign in to TMDb
+1. Open [TMDb](https://www.themoviedb.org/).
+2. Create a free account or sign in to an existing account.
+3. Open your profile menu in the upper-right corner.
+4. Click **Settings**.
+5. Select **API** in the Settings sidebar.
 
-1. Go to [themoviedb.org](https://www.themoviedb.org/) and sign in, or create a free TMDb account.
-2. Open **Settings** from your profile menu.
-3. Select **API** in the Settings sidebar.
-4. If TMDb shows **Upgrade Subscription** or asks you to create an application, choose the free **Developer Plan** and continue.
+### Subscribe to the free Developer Plan
 
-### 2. Complete the Developer Plan form
+If TMDb shows **Upgrade Subscription** or asks you to create an application, select the free **Developer Plan** and complete the form.
 
-TMDb asks for application and contact information before it issues credentials. For a personal InkyPi installation, enter the following:
+Use the following suggested application values for a personal InkyPi installation:
 
-| Form field | Suggested value |
-|---|---|
-| Application Name | `InkyPi TMDb Movie Radar` |
-| Application URL | `http://localhost` |
-| Type of Use | `Desktop Application` |
+| Form field          | Suggested value                                                                                                                   |
+| ------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Application Name    | `InkyPi TMDb Movie Radar`                                                                                                         |
+| Application URL     | `http://localhost`                                                                                                                |
+| Type of Use         | `Desktop Application`                                                                                                             |
 | Application Summary | `A personal, non-commercial InkyPi e-paper display plugin that shows upcoming and currently playing movie information from TMDb.` |
-| First Name / Last Name | Your real name |
-| Email Address | Your contact email; the account email is fine if it is pre-filled |
-| Phone, address, city, state, ZIP, country | Your real contact details, as TMDb requires for the Developer Plan form |
-| Terms checkbox | Read and accept the listed terms, privacy policy, and notice of collection |
 
-Click **Subscribe** when the form is complete. TMDb should return you to the API settings page.
+Enter your real contact information in the required contact fields, accept TMDb's listed terms, and click **Subscribe**.
 
-### 3. Find the correct credential
+TMDb should return you to the **Settings → API** page after the subscription is created.
 
-On **Settings → API**, TMDb displays two different credentials:
+### Copy the correct TMDb credential
 
-- **API Read Access Token**: a long token used with `Authorization: Bearer ...`. **Do not use this one** for the current version of this plugin.
-- **API Key**: the shorter key shown in the section directly below the Read Access Token. **Use this one.**
+On the TMDb API settings page, you will see two credentials:
 
-Copy the value from the **API Key** field. Do not share it in screenshots, GitHub commits, issues, or chat messages. TMDb supports application-level API authentication and provides a key-validation endpoint if you need to verify your credentials. [web:61][web:65]
+- **API Read Access Token**: A long token intended for Bearer-token authentication. Do **not** use this value with the current plugin.
+- **API Key**: A shorter key shown below the API Read Access Token. Use **this** value with TMDb Movie Radar.
 
-### 4. Add the key to InkyPi
+Copy the value under **API Key** only.
 
-1. Open the InkyPi web interface.
-2. Click the **key icon** to open **API Keys**.
-3. Create a new entry with this exact name:
+Do not share the key in screenshots, GitHub commits, support tickets, or chat messages. Treat it like a password.
 
-```text
-TMDB_API_KEY
-```
+### Add the key in InkyPi
 
-4. Paste the TMDb **API Key** value—not the API Read Access Token—as the value.
-5. Save the API key.
-6. Open the TMDb Movie Radar plugin settings, choose your desired display options, and save.
-7. Refresh the Movie Radar plugin from InkyPi.
+1. Open the InkyPi web UI.
+2. Click the **key icon** to open API Keys.
+3. Add a new environment key named:
+   ```text
+   TMDB_API_KEY
+   ```
+4. Paste the short TMDb **API Key** as the value.
+5. Save the key.
+6. Open the TMDb Movie Radar plugin settings.
+7. Configure your preferred movie mode and display options.
+8. Save the plugin settings and refresh the display.
 
-The name `TMDB_API_KEY` is case-sensitive. The plugin reads it from InkyPi API Keys and does not store the credential in its settings page.
+The key name must be exactly `TMDB_API_KEY`.
 
-### API key troubleshooting
+### Test the API key
 
-- **TMDb API key was rejected:** Confirm you copied the short value under **API Key**, not the long **API Read Access Token**.
-- **Missing `TMDB_API_KEY`:** Open InkyPi API Keys and confirm the key name is exactly `TMDB_API_KEY` with no spaces.
-- **No data or poster appears:** Confirm the InkyPi device can access the internet and increase the request timeout in plugin settings if needed.
-- **New credentials do not work immediately:** Re-open the API settings page, verify the Developer Plan subscription is active, save the InkyPi key again, and refresh the plugin.
-- **You exposed a credential:** Use TMDb's **Regenerate Key** option, then update the value saved under `TMDB_API_KEY` in InkyPi.
+TMDb provides a credential-testing link on the API settings page. You can also test the plugin directly from InkyPi after saving the key.
 
-## Configuration
+If the plugin shows **TMDb API key was rejected**:
 
-| Setting | Default | Purpose |
-|---|---:|---|
-| Radar mode | Upcoming releases | Select Upcoming, Now Playing, Popular, or Top Rated |
-| Featured movie | Daily pick | Select daily, first result, or random-on-refresh behavior |
-| Release region | US | Two-letter ISO country/region code, such as US, CA, GB, or AU |
-| Language | en-US | TMDb language code, such as en-US or fr-FR |
-| Minimum rating | 0 | Hide movies below this TMDb rating |
-| Minimum vote count | 0 | Hide movies with fewer votes than this value |
-| Request timeout | 15 seconds | Maximum time allowed for API and poster image requests |
+- Confirm you copied the short value below **API Key**.
+- Do not use the longer **API Read Access Token**.
+- Confirm the InkyPi key name is exactly `TMDB_API_KEY`.
+- Confirm your TMDb Developer Plan subscription is active.
+- Save the key again in InkyPi and refresh the plugin.
 
-## Display behavior
+If you accidentally expose your key, use TMDb's **Regenerate Key** option and immediately replace the value stored in InkyPi.
 
-The plugin first requests a matching movie list from TMDb, then gets full details for the selected movie. It downloads the movie's poster, crops it to fit the e-paper layout, and renders the dashboard.
+## Add the plugin in InkyPi
 
-For **Daily pick**, the selected title is deterministic for the day, mode, and region. A normal display refresh will therefore keep the same film on screen that day instead of cycling unpredictably.
+1. Open the InkyPi web UI.
+2. Add the **TMDb Movie Radar** plugin to a playlist or open it directly.
+3. Select the movie radar mode.
+4. Choose a featured-movie selection method.
+5. Set the release region and language.
+6. Optionally set rating and vote-count filters.
+7. Save the plugin settings.
+8. Refresh the display or restart InkyPi if needed.
 
-The footer contains the required TMDb attribution:
+## How it works
 
-```text
-Movie data and artwork: TMDB
-```
-
-## TMDb API endpoints
-
-TMDb Movie Radar uses TMDb's movie list and detail endpoints:
+The plugin queries TMDb's movie-list endpoints using the selected radar mode:
 
 ```text
 /movie/upcoming
 /movie/now_playing
 /movie/popular
 /movie/top_rated
-/movie/{movie_id}
 ```
 
-Poster images are downloaded from TMDb's image service.
+It chooses a movie from the returned results, requests the selected movie's full details, downloads its TMDb poster artwork, and renders the result for the connected e-paper display.
+
+For **Daily Pick**, the plugin derives a stable selection from the current date, selected mode, selected region, and returned movie list. The movie therefore remains the same for normal refreshes on that day, rather than changing every time the display updates.
+
+The plugin uses the display resolution reported by InkyPi and scales the poster, metadata, and overview layout to fit the configured panel orientation.
+
+## Notes and limitations
+
+- The InkyPi device must have internet access.
+- TMDb availability, artwork, titles, release dates, ratings, genres, and runtime data depend on TMDb's current data.
+- Upcoming and Now Playing results can vary based on the selected release region.
+- A movie may not have poster artwork, a release date, runtime, rating, genre, or overview available.
+- If poster artwork cannot be downloaded, the plugin renders a `NO POSTER` placeholder instead.
+- The selected movie list can change as TMDb updates its catalog and rankings.
+- Very long movie titles or overviews may be wrapped or truncated to fit the e-paper display.
+- The plugin uses TMDb data and artwork under TMDb's terms and includes TMDb attribution in the rendered footer.
+- This product uses the TMDB API but is not endorsed or certified by TMDB.
 
 ## Troubleshooting
 
-### Movie data does not load
+- **Missing API key**
+  - Open InkyPi API Keys using the key icon.
+  - Confirm the key name is exactly `TMDB_API_KEY`.
+  - Confirm the saved value is not blank.
+  - Restart InkyPi after changing API Keys if the plugin does not immediately pick up the key.
 
-- Confirm the InkyPi device has internet access.
-- Verify that `TMDB_API_KEY` is present in InkyPi API Keys.
-- Confirm you used the short TMDb **API Key**, rather than the longer API Read Access Token.
-- Verify the Developer Plan subscription is active in TMDb Settings → API.
-- Increase the request timeout if the connection is slow.
-- Check your selected region and language code.
-- Lower rating and vote filters if they eliminate all returned movies.
+- **TMDb API key was rejected**
+  - Confirm you used the shorter **API Key** from TMDb Settings → API.
+  - Do not use the longer **API Read Access Token**.
+  - Confirm the Developer Plan application is active in your TMDb account.
+  - Confirm the key was copied without leading or trailing spaces.
+  - Regenerate the TMDb key if it may have been exposed, then update `TMDB_API_KEY` in InkyPi.
 
-### Poster does not load
+- **Could not connect to TMDb**
+  - Confirm the InkyPi device has internet access.
+  - Confirm DNS can resolve `api.themoviedb.org`.
+  - Check firewall, proxy, Pi-hole, VLAN, and outbound HTTPS restrictions.
+  - Increase the request-timeout setting if the connection is slow.
 
-The plugin still renders when poster download fails. It shows a `NO POSTER` placeholder instead. Check internet connectivity, DNS, firewall rules, and the timeout setting.
+- **No movies matched your filters**
+  - Lower the minimum rating.
+  - Lower the minimum vote count.
+  - Try a different movie radar mode.
+  - Confirm the selected region and language are valid.
 
-### Plugin does not appear or fails to load
+- **Poster does not load**
+  - The plugin will still display movie information with a `NO POSTER` placeholder.
+  - Confirm the InkyPi device can reach TMDb's image service.
+  - Check DNS, firewall rules, and outbound HTTPS access.
+  - Increase the request timeout if poster downloads are slow.
 
-Validate the Python source and restart InkyPi:
+- **Plugin does not load after updating**
+  - Validate the Python file:
+    ```bash
+    cd ~/InkyPi/src
+    python3 -m py_compile plugins/tmdb_movie_radar/tmdb_movie_radar.py
+    ```
+  - Restart InkyPi:
+    ```bash
+    sudo systemctl restart inkypi.service
+    ```
+  - Review recent logs:
+    ```bash
+    sudo journalctl -u inkypi.service -n 150 --no-pager
+    ```
 
-```bash
-cd ~/InkyPi/src
-python3 -m py_compile plugins/tmdb_movie_radar/tmdb_movie_radar.py
-sudo systemctl restart inkypi.service
-sudo journalctl -u inkypi.service -n 150 --no-pager
-```
+## Security and privacy
 
-## Privacy and security
+- The plugin connects directly to TMDb's API and image servers.
+- `TMDB_API_KEY` is stored in InkyPi API Keys rather than plugin settings.
+- The plugin does not upload display data, settings, or API credentials to another service.
+- TMDb movie metadata, poster artwork, and release information are displayed on the physical e-paper screen.
+- Treat your TMDb API key as a password.
+- If your key is exposed, regenerate it in TMDb and update it in InkyPi immediately.
 
-- The plugin sends requests only to TMDb's API and image endpoints.
-- Your TMDb API key is read from InkyPi API Keys.
-- The plugin does not send telemetry or movie data to another service.
-- Treat the TMDb API key as a credential and do not publish it.
+## Repository
 
-## License
+GitHub repository:
 
-MIT License. Movie data and artwork remain subject to TMDb's terms and attribution requirements.
+[https://github.com/Shadal18/inkypi-tmdb-movie-radar](https://github.com/Shadal18/inkypi-tmdb-movie-radar)
+
+## Screenshots
+
+- Main Movie Radar display with poster artwork, movie metadata, and overview.
+- Plugin settings screen.
+
+<p align="center">
+  <img src="screenshots/example.png" width="45%" />
+  <img src="screenshots/settings.png" width="45%" />
+</p>
