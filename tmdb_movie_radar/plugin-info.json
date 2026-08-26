@@ -1,0 +1,6 @@
+{
+  "display_name": "TMDb Movie Radar",
+  "id": "tmdb_movie_radar",
+  "class": "TmdbMovieRadar",
+  "repository": "https://github.com/shadal18/inkypi-tmdb-movie-radar"
+}

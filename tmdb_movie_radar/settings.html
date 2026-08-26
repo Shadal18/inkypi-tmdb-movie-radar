@@ -1,0 +1,279 @@
+<style>
+  :root {
+    --ink-bg: var(--background-color, var(--color-background, #f5f7fb));
+    --ink-bg-soft: var(--card-background-secondary, var(--color-surface-2, #eef2f7));
+    --ink-panel: var(--card-background, var(--color-surface, #ffffff));
+    --ink-panel-2: var(--card-background-hover, var(--color-surface-2, #f8fafc));
+    --ink-border: var(--border-color, rgba(15, 23, 42, 0.12));
+    --ink-text: var(--text-primary, var(--color-text, #0f172a));
+    --ink-text-muted: var(--text-secondary, var(--color-text-secondary, #475569));
+    --ink-text-soft: var(--text-muted, #64748b);
+    --ink-primary: var(--accent-color, #14b8a6);
+    --ink-info: var(--info-color, #3b82f6);
+    --ink-shadow-sm: 0 8px 24px rgba(15, 23, 42, 0.08);
+    --ink-radius-xl: 18px;
+  }
+
+  html.dark, body.dark, [data-theme="dark"], html[data-theme="dark"] {
+    --ink-bg: var(--background-color, var(--color-background, #0f172a));
+    --ink-bg-soft: var(--card-background-secondary, var(--color-surface-2, #162033));
+    --ink-panel: var(--card-background, var(--color-surface, #111827));
+    --ink-panel-2: var(--card-background-hover, var(--color-surface-2, #172033));
+    --ink-border: var(--border-color, rgba(255, 255, 255, 0.1));
+    --ink-text: var(--text-primary, var(--color-text, #f8fafc));
+    --ink-text-muted: var(--text-secondary, var(--color-text-secondary, #cbd5e1));
+    --ink-text-soft: var(--text-muted, #94a3b8);
+    --ink-shadow-sm: 0 10px 28px rgba(0, 0, 0, 0.22);
+  }
+
+  .tmdb-settings-container { width: 100%; box-sizing: border-box; color: var(--ink-text); }
+  .ink-shell { display: grid; gap: 18px; margin-top: 8px; }
+
+  .ink-hero, .ink-section, .ink-hint-card, .ink-link-card {
+    overflow: hidden;
+    border: 1px solid var(--ink-border);
+    border-radius: var(--ink-radius-xl);
+    background: linear-gradient(180deg, var(--ink-panel), var(--ink-panel-2));
+    box-shadow: var(--ink-shadow-sm);
+  }
+
+  .ink-hero {
+    position: relative;
+    padding: 22px;
+    background:
+      radial-gradient(circle at top right, color-mix(in srgb, var(--ink-primary) 16%, transparent), transparent 34%),
+      radial-gradient(circle at bottom left, color-mix(in srgb, var(--ink-info) 12%, transparent), transparent 30%),
+      linear-gradient(180deg, color-mix(in srgb, var(--ink-panel) 92%, var(--ink-bg-soft) 8%), var(--ink-panel-2));
+  }
+
+  .ink-eyebrow {
+    display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; margin-bottom: 10px;
+    border: 1px solid color-mix(in srgb, var(--ink-primary) 22%, transparent); border-radius: 999px;
+    background: color-mix(in srgb, var(--ink-primary) 14%, transparent); color: var(--ink-primary);
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  }
+
+  .ink-hero h2 { margin: 0; color: var(--ink-text); font-size: 28px; line-height: 1.08; letter-spacing: -0.03em; }
+  .ink-hero p { max-width: 68ch; margin: 10px 0 0; color: var(--ink-text-muted); font-size: 14px; line-height: 1.6; }
+
+  .ink-hint-card, .ink-link-card { padding: 16px 20px; }
+  .ink-hint-heading { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+
+  .ink-hint-icon, .ink-section-icon, .ink-link-icon {
+    display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center;
+    border: 1px solid var(--ink-border); border-radius: 12px;
+    background: color-mix(in srgb, var(--ink-bg-soft) 65%, var(--ink-panel) 35%); font-size: 18px;
+  }
+
+  .ink-hint-icon {
+    width: 30px; height: 30px; border-color: color-mix(in srgb, var(--ink-primary) 28%, transparent);
+    border-radius: 9px; background: color-mix(in srgb, var(--ink-primary) 14%, transparent); font-size: 16px;
+  }
+
+  .ink-hint-title { margin: 0; color: var(--ink-text); font-size: 14px; font-weight: 700; }
+  .ink-hint-copy, .ink-link-help { margin: 0; color: var(--ink-text-muted); font-size: 12px; line-height: 1.6; }
+  .ink-hint-copy + .ink-hint-copy { margin-top: 10px; }
+
+  .ink-hint-copy code, .ink-note code {
+    padding: 2px 5px; border-radius: 5px; background: color-mix(in srgb, var(--ink-primary) 12%, transparent);
+    color: var(--ink-text); font-family: monospace;
+  }
+
+  .ink-hint-copy a, .ink-link-card a { color: var(--ink-primary); font-weight: 700; text-decoration: none; }
+  .ink-hint-copy a:hover, .ink-hint-copy a:focus-visible, .ink-link-card a:hover, .ink-link-card a:focus-visible { outline: none; text-decoration: underline; }
+
+  .ink-section-header { display: flex; align-items: center; gap: 14px; padding: 18px 20px; border-bottom: 1px solid var(--ink-border); }
+  .ink-section-icon { width: 38px; height: 38px; }
+  .ink-section-copy { flex: 1; min-width: 0; }
+  .ink-section-title { margin: 0; color: var(--ink-text); font-size: 18px; font-weight: 700; line-height: 1.2; }
+  .ink-section-subtitle { margin-top: 4px; color: var(--ink-text-muted); font-size: 13px; }
+  .ink-section-body { padding: 18px 20px 20px; }
+
+  .ink-grid, .ink-grid-2 { display: grid; gap: 16px; }
+  .ink-grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .ink-field { display: grid; min-width: 0; gap: 8px; }
+  .ink-label { color: var(--ink-text-soft); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+
+  .ink-input, .tmdb-settings-container input[type="text"], .tmdb-settings-container input[type="number"], .tmdb-settings-container select {
+    box-sizing: border-box; width: 100%; min-height: 46px; padding: 0 14px; border: 1px solid var(--ink-border);
+    border-radius: 12px; outline: none; background: var(--ink-panel); color: var(--ink-text);
+    box-shadow: inset 0 1px 0 color-mix(in srgb, #fff 14%, transparent);
+  }
+
+  .ink-input::placeholder, .tmdb-settings-container input::placeholder { color: var(--ink-text-soft); opacity: 1; }
+  .ink-input:focus, .tmdb-settings-container input:focus, .tmdb-settings-container select:focus {
+    border-color: color-mix(in srgb, var(--ink-primary) 45%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--ink-primary) 14%, transparent);
+  }
+
+  .ink-note { margin: 0; color: var(--ink-text-muted); font-size: 12px; line-height: 1.6; }
+
+  .ink-link-card { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+  .ink-link-icon { width: 38px; height: 38px; background: color-mix(in srgb, var(--ink-info) 13%, var(--ink-panel)); }
+  .ink-link-copy { min-width: 0; }
+  .ink-link-card a { display: inline-block; word-break: break-word; }
+
+  .floatingchat-container-wrap, .floatingchat-container-wrap-mobi { right: 16px !important; bottom: 14px !important; left: unset !important; }
+  .floating-chat-kofi-popup-iframe { right: 16px !important; bottom: 76px !important; left: unset !important; }
+
+  @media (max-width: 760px) {
+    .ink-hero { padding: 18px; }
+    .ink-hero h2 { font-size: 22px; }
+    .ink-grid-2 { grid-template-columns: 1fr; }
+    .ink-section-header, .ink-section-body, .ink-hint-card, .ink-link-card { padding: 16px; }
+    .ink-link-card { align-items: flex-start; }
+  }
+</style>
+
+<div class="tmdb-settings-container">
+  <div class="ink-shell">
+    <section class="ink-hero">
+      <div class="ink-eyebrow">🎬 TMDb Movie Radar</div>
+      <h2>Feature a fresh movie release on your InkyPi display.</h2>
+      <p>
+        Choose upcoming, now-playing, popular, or top-rated movies from TMDb. Configure the region, language,
+        selection behavior, and filters for a poster-first e-paper movie display.
+      </p>
+    </section>
+
+    <section class="ink-hint-card">
+      <div class="ink-hint-heading">
+        <span class="ink-hint-icon" aria-hidden="true">🔑</span>
+        <h3 class="ink-hint-title">TMDb API key setup</h3>
+      </div>
+      <p class="ink-hint-copy">
+        Create or sign in to your TMDb account, then open <strong>Profile → Settings → API</strong>. If prompted,
+        choose the free <strong>Developer Plan</strong> and complete the application form.
+      </p>
+      <p class="ink-hint-copy">
+        For a personal InkyPi setup, use <code>InkyPi TMDb Movie Radar</code> as the application name,
+        <code>http://localhost</code> as the application URL, <code>Desktop Application</code> as the type of use,
+        and describe it as a personal, non-commercial e-paper movie display.
+      </p>
+      <p class="ink-hint-copy">
+        After subscribing, return to <strong>Settings → API</strong>. Copy the shorter value under
+        <strong>API Key</strong>, not the long <strong>API Read Access Token</strong>. In InkyPi's
+        <strong>API Keys</strong> page, save that value under the exact name <code>TMDB_API_KEY</code>.
+      </p>
+      <p class="ink-hint-copy">
+        Need the TMDb API page? <a href="https://www.themoviedb.org/settings/api" target="_blank" rel="noopener noreferrer">Open TMDb API settings</a>.
+      </p>
+    </section>
+
+    <section class="ink-section">
+      <div class="ink-section-header">
+        <span class="ink-section-icon" aria-hidden="true">🎞️</span>
+        <div class="ink-section-copy">
+          <h3 class="ink-section-title">Movie source</h3>
+          <div class="ink-section-subtitle">Select the type of TMDb movie list and its regional metadata.</div>
+        </div>
+      </div>
+      <div class="ink-section-body">
+        <div class="ink-grid-2">
+          <div class="ink-field">
+            <label for="mode" class="ink-label">Radar mode</label>
+            <select id="mode" name="mode" class="ink-input">
+              <option value="upcoming">Upcoming releases</option>
+              <option value="now_playing">Now playing</option>
+              <option value="popular">Popular movies</option>
+              <option value="top_rated">Top rated movies</option>
+            </select>
+            <p class="ink-note">Upcoming and now playing use the selected release region.</p>
+          </div>
+          <div class="ink-field">
+            <label for="selection" class="ink-label">Featured movie</label>
+            <select id="selection" name="selection" class="ink-input">
+              <option value="daily">Daily pick</option>
+              <option value="first">First result</option>
+              <option value="random">Random on refresh</option>
+            </select>
+            <p class="ink-note">Daily pick stays consistent for the same day, mode, and region.</p>
+          </div>
+          <div class="ink-field">
+            <label for="region" class="ink-label">Release region</label>
+            <input type="text" id="region" name="region" class="ink-input" maxlength="2" placeholder="US" />
+            <p class="ink-note">Use a two-letter country code, such as US, CA, GB, or AU.</p>
+          </div>
+          <div class="ink-field">
+            <label for="language" class="ink-label">Language</label>
+            <input type="text" id="language" name="language" class="ink-input" placeholder="en-US" />
+            <p class="ink-note">Use a TMDb language code, such as en-US, fr-FR, or de-DE.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ink-section">
+      <div class="ink-section-header">
+        <span class="ink-section-icon" aria-hidden="true">⚙️</span>
+        <div class="ink-section-copy">
+          <h3 class="ink-section-title">Filters and network</h3>
+          <div class="ink-section-subtitle">Limit which movies can be shown and control TMDb request timing.</div>
+        </div>
+      </div>
+      <div class="ink-section-body">
+        <div class="ink-grid-2">
+          <div class="ink-field">
+            <label for="minimum_rating" class="ink-label">Minimum rating</label>
+            <input type="number" id="minimum_rating" name="minimum_rating" class="ink-input" min="0" max="10" step="0.1" />
+            <p class="ink-note">Set to 0 to include every movie returned by the selected TMDb list.</p>
+          </div>
+          <div class="ink-field">
+            <label for="minimum_votes" class="ink-label">Minimum vote count</label>
+            <input type="number" id="minimum_votes" name="minimum_votes" class="ink-input" min="0" step="1" />
+            <p class="ink-note">Higher values help avoid titles with only a small number of ratings.</p>
+          </div>
+          <div class="ink-field">
+            <label for="request_timeout" class="ink-label">Network timeout (seconds)</label>
+            <input type="number" id="request_timeout" name="request_timeout" class="ink-input" min="5" max="60" step="1" />
+            <p class="ink-note">Increase this if poster downloads or TMDb requests are slow on your network.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="ink-link-card">
+      <span class="ink-link-icon" aria-hidden="true">⌘</span>
+      <div class="ink-link-copy">
+        <a href="https://github.com/shadal18/inkypi-tmdb-movie-radar" target="_blank" rel="noopener noreferrer">github.com/shadal18/inkypi-tmdb-movie-radar</a>
+        <div class="ink-link-help">Setup help, updates, release notes, and source code.</div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script src="https://storage.ko-fi.com/cdn/scripts/overlay-widget.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const defaults = {
+      mode: "upcoming",
+      selection: "daily",
+      region: "US",
+      language: "en-US",
+      minimum_rating: "0",
+      minimum_votes: "0",
+      request_timeout: "15",
+    }
+
+    const values =
+      typeof loadPluginSettings !== "undefined" && loadPluginSettings && typeof pluginSettings !== "undefined"
+        ? Object.assign({}, defaults, pluginSettings)
+        : defaults
+
+    Object.keys(defaults).forEach(function (key) {
+      const element = document.getElementById(key)
+      if (element) element.value = values[key] != null ? values[key] : defaults[key]
+    })
+
+    if (typeof kofiWidgetOverlay !== "undefined") {
+      const messages = ["I ♥ Coffee", "Tip Jar", "Fuel the Pixels", "Buy Me a Coffee", "Keep InkyPi Brewing"]
+      const message = messages[Math.floor(Math.random() * messages.length)]
+      kofiWidgetOverlay.draw("shadal", {
+        type: "floating-chat",
+        "floating-chat.donateButton.text": message,
+        "floating-chat.donateButton.background-color": "#00b9fe",
+        "floating-chat.donateButton.text-color": "#fff",
+      })
+    }
+  })
+</script>
